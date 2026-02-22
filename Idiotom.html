@@ -170,6 +170,20 @@ body.light .shell-fill-inner { background:linear-gradient(90deg,#3060e0,#60a8ff)
 .legend-item { display:flex; align-items:center; gap:6px; font-size:10px; color:var(--leg-col); }
 .legend-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
 .sidebar-footer { border-top:1px solid var(--sb-hdr-border); }
+/* ── Export Modal ── */
+.modal-overlay { position:fixed; inset:0; background:#0008; display:flex; align-items:center; justify-content:center; z-index:100; }
+.modal-content { background:var(--sb-bg); border:1px solid var(--sb-border); border-radius:12px; padding:20px; width:280px; }
+.modal-title { font-size:14px; font-weight:700; margin-bottom:16px; color:var(--name-col); }
+.modal-row { margin-bottom:12px; }
+.modal-label { display:block; font-size:11px; color:var(--lbl); margin-bottom:4px; }
+.modal-input { width:100%; padding:8px; background:var(--inp-bg); border:1px solid var(--inp-border); border-radius:6px; color:var(--name-col); font-family:'Space Mono',monospace; font-size:13px; }
+.modal-input:focus { border-color:var(--inp-focus); outline:none; }
+.modal-btns { display:flex; gap:8px; margin-top:16px; }
+.modal-btn { flex:1; padding:8px; border-radius:6px; border:1px solid var(--btn-border); background:var(--btn-bg); color:var(--btn-col); font-size:12px; cursor:pointer; }
+.modal-btn:hover { background:var(--btn-hbg); }
+.modal-btn.primary { background:#2040a0; color:#fff; border-color:#2040a0; }
+.modal-btn.primary:hover { background:#3050c0; }
+.export-btn { width:38px; height:22px; background:var(--btn-bg); border:1px solid var(--btn-border); border-radius:6px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:12px; flex-shrink:0; margin-top:2px; margin-left:4px; }
 </style>
 </head>
 <body class="dark">
@@ -399,6 +413,8 @@ function App() {
   const [neutrons, setNeutrons] = useState(6);
   const [electrons, setElectrons] = useState(6);
   const [dark, setDark] = useState(true);
+  const [showExport, setShowExport] = useState(false);
+  const [exportCm, setExportCm] = useState(8);
   React.useEffect(() => { document.body.className = dark ? 'dark' : 'light'; }, [dark]);
   const clamp = (v,lo,hi) => Math.max(lo, Math.min(hi, isNaN(v)?lo:v));
   const getElectronLimits = (z) => {
@@ -458,6 +474,32 @@ function App() {
   const ringOp = dark ? 1.0 : 0.9;
   const emptyCol = dark ? '#1a2450' : '#8090c0';
   const clipR = DR + NR * 1.15;
+
+  const handleExport = () => {
+    const svgEl = document.querySelector('.atom-svg');
+    if (!svgEl) return;
+    const svgClone = svgEl.cloneNode(true);
+    const PPI = 96;
+    const dpcm = PPI / 2.54;
+    const px = exportCm * dpcm;
+    svgClone.setAttribute('width', px);
+    svgClone.setAttribute('height', px);
+    const bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    bg.setAttribute('width', '100%');
+    bg.setAttribute('height', '100%');
+    bg.setAttribute('fill', '#ffffff');
+    svgClone.insertBefore(bg, svgClone.firstChild);
+    const svgData = new XMLSerializer().serializeToString(svgClone);
+    const blob = new Blob([svgData], {type: 'image/svg+xml'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${elementSym || 'atom'}-${protons}.svg`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setShowExport(false);
+  };
+
   return (
     <div id="layout">
       <aside className="sidebar">
@@ -471,6 +513,7 @@ function App() {
               title={dark ? 'Light mode' : 'Dark mode'}>
               <div className="theme-toggle-knob">{dark ? '🌙' : '☀️'}</div>
             </button>
+            <button className="export-btn" onClick={() => setShowExport(true)} title="Export SVG">⬇</button>
           </div>
         </div>
         <div className="sidebar-content">
@@ -657,6 +700,25 @@ function App() {
           </div>
         </div>
       </main>
+      {showExport && (
+        <div className="modal-overlay" onClick={() => setShowExport(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <div className="modal-title">Export SVG</div>
+            <div className="modal-row">
+              <label className="modal-label">Size (cm) — 1:1 ratio</label>
+              <input type="number" className="modal-input" value={exportCm} min="1" max="50" step="0.5"
+                onChange={e => setExportCm(parseFloat(e.target.value) || 8)}/>
+            </div>
+            <div className="modal-row">
+              <label className="modal-label">Resolution: 300 DPI (book print)</label>
+            </div>
+            <div className="modal-btns">
+              <button className="modal-btn" onClick={() => setShowExport(false)}>Cancel</button>
+              <button className="modal-btn primary" onClick={handleExport}>Export</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
