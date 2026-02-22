@@ -72,33 +72,31 @@ body.light {
 ::-webkit-scrollbar-thumb { background:var(--scroll-thumb); border-radius:3px; }
 #layout { display:flex; width:100vw; height:100vh; overflow:hidden; }
 .sidebar {
-  width:320px; min-width:320px; flex-shrink:0;
+  width:400px; min-width:400px; flex-shrink:0;
   background:var(--sb-bg); border-right:1px solid var(--sb-border);
   display:flex; flex-direction:column; z-index:10;
   transition:background 0.3s, border-color 0.3s;
 }
-.sidebar-header { padding:10px 20px 10px; border-bottom:1px solid var(--sb-hdr-border); }
-.header-top { display:flex; justify-content:space-between; align-items:flex-start; }
-.app-title { font-size:9px; letter-spacing:3px; text-transform:uppercase; color:var(--title-col); font-family:'Space Mono',monospace; margin-bottom:3px; }
-.app-name { font-size:19px; font-weight:800; color:var(--name-col); letter-spacing:-0.5px; }
-.theme-toggle { width:38px; height:22px; background:var(--btn-bg); border:1px solid var(--btn-border); border-radius:11px; cursor:pointer; display:flex; align-items:center; padding:2px; transition:all 0.2s; flex-shrink:0; margin-top:2px; }
-.theme-toggle-knob { width:16px; height:16px; border-radius:50%; transition:transform 0.2s; font-size:10px; display:flex; align-items:center; justify-content:center; }
-body.dark .theme-toggle-knob { transform:translateX(0); background:#3050a0; }
-body.light .theme-toggle-knob { transform:translateX(16px); background:#ffcc44; }
-.sidebar-content { padding:14px 14px; flex:1; display:flex; flex-direction:column; gap:8px; overflow-y:auto; overflow-x:hidden; }
-.element-card { background:var(--card-bg); border:1px solid var(--card-border); border-radius:12px; padding:12px; display:flex; align-items:center; gap:12px; transition:background 0.3s, border-color 0.3s; }
-.element-symbol-badge { width:48px; height:48px; border-radius:10px; background:var(--badge-bg); border:1px solid var(--badge-border); display:flex; align-items:center; justify-content:center; font-size:17px; font-weight:800; color:var(--badge-col); font-family:'Space Mono',monospace; flex-shrink:0; }
+.sidebar-header { padding:12px 25px 12px; border-bottom:1px solid var(--sb-hdr-border); }
+.header-top { display:flex; justify-content:space-between; align-items:center; }
+.app-title { font-size:11px; letter-spacing:3px; text-transform:uppercase; color:var(--title-col); font-family:'Space Mono',monospace; margin-bottom:4px; }
+.app-name { font-size:24px; font-weight:800; color:var(--name-col); letter-spacing:-0.5px; }
+.theme-toggle { width:38px; height:38px; background:var(--badge-bg); border:1px solid var(--badge-border); border-radius:10px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; color:var(--badge-col); transition:all 0.2s ease; }
+.theme-toggle:hover { background:var(--btn-hbg); border-color:var(--btn-hborder); }
+.sidebar-content { padding:18px 18px; flex:1; display:flex; flex-direction:column; gap:10px; overflow-y:auto; overflow-x:hidden; }
+.element-card { background:var(--card-bg); border:1px solid var(--card-border); border-radius:15px; padding:15px; display:flex; align-items:center; gap:15px; transition:background 0.3s, border-color 0.3s; }
+.element-symbol-badge { width:60px; height:60px; border-radius:12px; background:var(--badge-bg); border:1px solid var(--badge-border); display:flex; align-items:center; justify-content:center; font-size:21px; font-weight:800; color:var(--badge-col); font-family:'Space Mono',monospace; flex-shrink:0; }
 .element-info { flex:1; min-width:0; }
-.element-name { font-size:13px; font-weight:700; color:var(--elem-name); }
-.element-meta { font-size:10px; color:var(--elem-meta); font-family:'Space Mono',monospace; margin-top:2px; }
-.element-charge { font-size:10px; margin-top:2px; font-weight:700; }
+.element-name { font-size:16px; font-weight:700; color:var(--elem-name); }
+.element-meta { font-size:12px; color:var(--elem-meta); font-family:'Space Mono',monospace; margin-top:3px; }
+.element-charge { font-size:12px; margin-top:3px; font-weight:700; }
 .charge-neutral { color:#2aaa80; } .charge-pos { color:#ee4444; } .charge-neg { color:#4488ee; }
-.section-title { font-size:9px; letter-spacing:2.5px; text-transform:uppercase; color:var(--sec-title); font-family:'Space Mono',monospace; margin-bottom:8px; }
+.section-title { font-size:11px; letter-spacing:2.5px; text-transform:uppercase; color:var(--sec-title); font-family:'Space Mono',monospace; margin-bottom:10px; }
 .param-row { margin-bottom:6px; }
 .param-control { display:flex; align-items:center; gap:6px; }
-.ctrl-btn { width:28px; height:28px; background:var(--btn-bg); border:1px solid var(--btn-border); color:var(--btn-col); border-radius:6px; cursor:pointer; font-size:15px; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:all 0.15s; line-height:1; font-family:'Space Mono',monospace; }
+.ctrl-btn { width:35px; height:35px; background:var(--btn-bg); border:1px solid var(--btn-border); color:var(--btn-col); border-radius:8px; cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:all 0.15s; line-height:1; font-family:'Space Mono',monospace; }
 .ctrl-btn:hover { background:var(--btn-hbg); border-color:var(--btn-hborder); color:var(--name-col); }
-.ctrl-input { flex:1; background:var(--inp-bg); border:1px solid var(--inp-border); border-radius:6px; padding:4px 6px; font-size:13px; font-weight:700; text-align:center; outline:none; font-family:'Space Mono',monospace; transition:border-color 0.2s; color:inherit; }
+.ctrl-input { flex:1; background:var(--inp-bg); border:1px solid var(--inp-border); border-radius:8px; padding:5px 8px; font-size:16px; font-weight:700; text-align:center; outline:none; font-family:'Space Mono',monospace; transition:border-color 0.2s; color:inherit; }
 .ctrl-input:focus { border-color:var(--inp-focus); }
 .ctrl-input-proton { color:#dd2222 !important; }
 body.dark .ctrl-input-neutron { color:#c0c0cc !important; }
@@ -116,18 +114,18 @@ body.light .ctrl-input-neutron { color:#666 !important; }
 .pt-cell {
   background:var(--pt-cell);
   border:1px solid var(--pt-cell-border);
-  border-radius:0;
+  border-radius:2px;
   cursor:pointer;
   display:flex; flex-direction:column; align-items:center; justify-content:center;
-  padding:2px;
-  transition:background 0.12s, border-color 0.12s;
+  padding:3px;
+  transition:all 0.15s ease;
   min-width:0; min-height:0;
   aspect-ratio:1;
   overflow:hidden;
 }
-.pt-cell:hover { background:var(--pt-cell-hover); border-color:var(--pt-active-border); }
-.pt-cell.active { background:var(--pt-cell-active); border-color:var(--pt-active-border); border-width:1.5px; }
-.pt-sym { font-size:10px; font-weight:700; color:var(--pt-sym); line-height:1; font-family:'Space Mono',monospace; }
+.pt-cell:hover { background:var(--pt-cell-hover); border-color:var(--pt-active-border); transform:scale(1.1); z-index:1; }
+.pt-cell.active { background:var(--pt-cell-active); border-color:var(--pt-active-border); border-width:2px; box-shadow:0 0 8px rgba(64,96,192,0.3); }
+.pt-sym { font-size:12px; font-weight:700; color:var(--pt-sym); line-height:1; font-family:'Space Mono',monospace; }
 .pt-gap { /* empty spacer */ }
 /* lanthanide/actinide row gap */
 .pt-row-gap { grid-column:1/-1; height:4px; }
@@ -145,14 +143,14 @@ body.light .ctrl-input-neutron { color:#666 !important; }
 body.dark .pt-cell.active .pt-sym { color:#c0d8ff; }
 body.dark .pt-metalloid { border-color:#888800; opacity:1; }
 body.dark .pt-halogen { border-color:#008844; opacity:1; }
-.shell-table { background:var(--st-bg); border:1px solid var(--sb-hdr-border); border-radius:10px; transition:background 0.3s; max-height:140px; overflow-y:auto; }
-.shell-row { display:flex; align-items:center; padding:5px 12px; font-size:10px; border-bottom:1px solid var(--st-row-border); }
+.shell-table { background:var(--st-bg); border:1px solid var(--sb-hdr-border); border-radius:10px; transition:background 0.3s; flex:1; min-height:50px; overflow-y:auto; }
+.shell-row { display:flex; align-items:center; padding:6px 15px; font-size:12px; border-bottom:1px solid var(--st-row-border); }
 .shell-row:last-child { border-bottom:none; }
-.shell-label { color:var(--st-lbl); font-family:'Space Mono',monospace; min-width:28px; }
-.shell-fill-bar { flex:1; height:4px; background:var(--st-bar-bg); border-radius:2px; margin:0 10px; overflow:hidden; }
-.shell-fill-inner { height:100%; background:linear-gradient(90deg,#1a60c0,#60c0ff); border-radius:2px; transition:width 0.35s ease; }
+.shell-label { color:var(--st-lbl); font-family:'Space Mono',monospace; min-width:35px; }
+.shell-fill-bar { flex:1; height:5px; background:var(--st-bar-bg); border-radius:3px; margin:0 12px; overflow:hidden; }
+.shell-fill-inner { height:100%; background:linear-gradient(90deg,#1a60c0,#60c0ff); border-radius:3px; transition:width 0.35s ease; }
 body.light .shell-fill-inner { background:linear-gradient(90deg,#3060e0,#60a8ff); }
-.shell-count { font-family:'Space Mono',monospace; color:var(--st-cnt); font-size:9px; min-width:38px; text-align:right; }
+.shell-count { font-family:'Space Mono',monospace; color:var(--st-cnt); font-size:11px; min-width:48px; text-align:right; }
 /* ── Canvas ── */
 .canvas-area {
   flex:1; min-width:0;
@@ -166,25 +164,25 @@ body.light .shell-fill-inner { background:linear-gradient(90deg,#3060e0,#60a8ff)
   background-size:38px 38px; opacity:var(--dot-op); pointer-events:none;
 }
 .atom-svg { width:100%; height:100%; display:block; }
-.legend { position:absolute; bottom:16px; right:18px; display:flex; gap:12px; background:var(--leg-bg); border:1px solid var(--leg-border); border-radius:10px; padding:8px 14px; backdrop-filter:blur(8px); transition:background 0.3s, border-color 0.3s; }
-.legend-item { display:flex; align-items:center; gap:6px; font-size:10px; color:var(--leg-col); }
-.legend-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+.legend { position:absolute; bottom:20px; right:22px; display:flex; gap:15px; background:var(--leg-bg); border:1px solid var(--leg-border); border-radius:12px; padding:10px 18px; backdrop-filter:blur(8px); transition:background 0.3s, border-color 0.3s; }
+.legend-item { display:flex; align-items:center; gap:8px; font-size:12px; color:var(--leg-col); }
+.legend-dot { width:12px; height:12px; border-radius:50%; flex-shrink:0; }
 .sidebar-footer { border-top:1px solid var(--sb-hdr-border); }
 /* ── Export Modal ── */
 .modal-overlay { position:fixed; inset:0; background:#0008; display:flex; align-items:center; justify-content:center; z-index:100; }
-.modal-content { background:var(--sb-bg); border:1px solid var(--sb-border); border-radius:12px; padding:20px; width:280px; }
-.modal-title { font-size:14px; font-weight:700; margin-bottom:16px; color:var(--name-col); }
-.modal-row { margin-bottom:12px; }
-.modal-label { display:block; font-size:11px; color:var(--lbl); margin-bottom:4px; }
-.modal-input { width:100%; padding:8px; background:var(--inp-bg); border:1px solid var(--inp-border); border-radius:6px; color:var(--name-col); font-family:'Space Mono',monospace; font-size:13px; }
+.modal-content { background:var(--sb-bg); border:1px solid var(--sb-border); border-radius:15px; padding:25px; width:350px; }
+.modal-title { font-size:18px; font-weight:700; margin-bottom:20px; color:var(--name-col); }
+.modal-row { margin-bottom:15px; }
+.modal-label { display:block; font-size:14px; color:var(--lbl); margin-bottom:5px; }
+.modal-input { width:100%; padding:10px; background:var(--inp-bg); border:1px solid var(--inp-border); border-radius:8px; color:var(--name-col); font-family:'Space Mono',monospace; font-size:16px; }
 .modal-input:focus { border-color:var(--inp-focus); outline:none; }
 .modal-btns { display:flex; gap:8px; margin-top:16px; }
-.modal-btn { flex:1; padding:8px; border-radius:0; border:1px solid var(--btn-border); background:var(--btn-bg); color:var(--btn-col); font-size:12px; cursor:pointer; }
+.modal-btn { flex:1; padding:10px; border-radius:8px; border:1px solid var(--btn-border); background:var(--btn-bg); color:var(--btn-col); font-size:14px; cursor:pointer; }
 .modal-btn:hover { background:var(--btn-hbg); }
 .modal-btn.primary { background:#2040a0; color:#fff; border-color:#2040a0; }
 .modal-btn.primary:hover { background:#3050c0; }
-.export-btn { width:38px; height:22px; background:#a0b0e0; border:1px solid #3040a0; border-radius:0; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:12px; flex-shrink:0; margin-top:2px; margin-left:4px; color:#04040f; }
-body.light .export-btn { background:#3050a0; color:#fff; }
+.export-btn { width:38px; height:38px; background:var(--badge-bg); border:1px solid var(--badge-border); border-radius:10px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; color:var(--badge-col); transition:all 0.2s ease; }
+.export-btn:hover { background:var(--btn-hbg); border-color:var(--btn-hborder); }
 </style>
 </head>
 <body class="dark">
@@ -447,7 +445,7 @@ function App() {
   const elementSym = elemEntry ? elemEntry[1] : '?';
   const charge = protons - electrons;
   const shellDist = useMemo(() => distributeElectrons(electrons), [electrons]);
-  const NR = 9;
+  const NR = 11;
   const totalN = protons + neutrons;
   const DR = diskR(totalN, NR);
   const nucleonPos = useMemo(() => {
@@ -461,11 +459,11 @@ function App() {
     const mixed = seededShuffle(seq, protons * 397 + neutrons * 1031);
     return pts.map((pt,i) => ({...pt, type: mixed[i]||'neutron'}));
   }, [protons, neutrons, totalN, DR]);
-  const SHELL_GAP = 48;
+  const SHELL_GAP = 60;
   const FIRST_R = Math.max(DR + 46, 54);
   const shellRadii = shellDist.map((_,i) => FIRST_R + i * SHELL_GAP);
   const outerR = shellRadii.length > 0 ? shellRadii[shellRadii.length-1] + 34 : DR + 82;
-  const PAD = 44;
+  const PAD = 55;
   const SZ = outerR * 2 + PAD * 2;
   const cx = SZ/2, cy = SZ/2;
   const ringStroke = dark ? '#0c183e' : '#111111';
@@ -511,11 +509,26 @@ function App() {
               <div className="app-title">Idiot Technologies</div>
               <div className="app-name">Atom Visualizer</div>
             </div>
-            <button className="theme-toggle" onClick={() => setDark(!dark)}
-              title={dark ? 'Light mode' : 'Dark mode'}>
-              <div className="theme-toggle-knob">{dark ? '🌙' : '☀️'}</div>
-            </button>
-            <button className="export-btn" onClick={() => setShowExport(true)} title="Export SVG">⬇</button>
+            <div style={{display:'flex', gap:'6px'}}>
+              <button className="theme-toggle" onClick={() => setDark(!dark)} title={dark ? 'Light mode' : 'Dark mode'}>
+                {dark ? (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                  </svg>
+                ) : (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                  </svg>
+                )}
+              </button>
+              <button className="export-btn" onClick={() => setShowExport(true)} title="Export SVG">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
         <div className="sidebar-content">
@@ -537,7 +550,7 @@ function App() {
               {label:'Electrons', val:electrons, cls:'electron', fn:v=>setElectrons(clamp(parseInt(v)||0, eMin, eMax)), lo:eMin, hi:eMax},
             ].map(({label,val,cls,fn,lo,hi}) => (
               <div className="param-row" key={cls} style={{display:'flex', alignItems:'center', gap:'6px'}}>
-                <span className="param-label-text" style={{minWidth:'70px', color: cls === 'proton' ? '#dd2222' : cls === 'neutron' ? (dark ? '#c0c0cc' : '#666') : '#2288dd'}}>{label}</span>
+                <span className="param-label-text" style={{minWidth:'70px', fontWeight:700, color:dark?'#c8d4ff':'#1a2050'}}>{label}</span>
                 <button className="ctrl-btn" onClick={() => fn(val-1)}>−</button>
                 <input className={`ctrl-input ctrl-input-${cls}`}
                   type="number" value={val} min={lo} max={hi}
@@ -547,7 +560,7 @@ function App() {
             ))}
           </div>
           {shellDist.length > 0 && (
-            <div>
+            <div style={{flex:1, display:'flex', flexDirection:'column', minHeight:0}}>
               <div className="section-title">Electron Configuration</div>
               <div className="shell-table">
                 {shellDist.map((count, i) => (
@@ -564,7 +577,7 @@ function App() {
           )}
         </div>
         <div className="sidebar-footer">
-          <div className="section-title" style={{padding:'8px 14px 8px 14px'}}>Periodic Table</div>
+          <div className="section-title" style={{padding:'10px 18px 10px 18px'}}>Periodic Table</div>
           <div>
             <PeriodicTable activeZ={protons} onSelect={handlePTSelect}/>
           </div>
@@ -658,7 +671,7 @@ function App() {
               fill="none" stroke={dark?'#cc000028':'#cc000018'} strokeWidth="1"/>
           }
           {shellDist.map((count,si) => {
-            const r = shellRadii[si], eR = 5.5;
+            const r = shellRadii[si], eR = 7;
             return Array.from({length:count}, (_,j) => {
               const a = (2*Math.PI*j)/count - Math.PI/2;
               const ex = cx+r*Math.cos(a), ey = cy+r*Math.sin(a);
