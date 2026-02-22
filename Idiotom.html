@@ -179,11 +179,12 @@ body.light .shell-fill-inner { background:linear-gradient(90deg,#3060e0,#60a8ff)
 .modal-input { width:100%; padding:8px; background:var(--inp-bg); border:1px solid var(--inp-border); border-radius:6px; color:var(--name-col); font-family:'Space Mono',monospace; font-size:13px; }
 .modal-input:focus { border-color:var(--inp-focus); outline:none; }
 .modal-btns { display:flex; gap:8px; margin-top:16px; }
-.modal-btn { flex:1; padding:8px; border-radius:6px; border:1px solid var(--btn-border); background:var(--btn-bg); color:var(--btn-col); font-size:12px; cursor:pointer; }
+.modal-btn { flex:1; padding:8px; border-radius:0; border:1px solid var(--btn-border); background:var(--btn-bg); color:var(--btn-col); font-size:12px; cursor:pointer; }
 .modal-btn:hover { background:var(--btn-hbg); }
 .modal-btn.primary { background:#2040a0; color:#fff; border-color:#2040a0; }
 .modal-btn.primary:hover { background:#3050c0; }
-.export-btn { width:38px; height:22px; background:var(--btn-bg); border:1px solid var(--btn-border); border-radius:6px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:12px; flex-shrink:0; margin-top:2px; margin-left:4px; }
+.export-btn { width:38px; height:22px; background:#a0b0e0; border:1px solid #3040a0; border-radius:0; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:12px; flex-shrink:0; margin-top:2px; margin-left:4px; color:#04040f; }
+body.light .export-btn { background:#3050a0; color:#fff; }
 </style>
 </head>
 <body class="dark">
@@ -415,6 +416,7 @@ function App() {
   const [dark, setDark] = useState(true);
   const [showExport, setShowExport] = useState(false);
   const [exportCm, setExportCm] = useState(8);
+  const [exportDPI, setExportDPI] = useState(300);
   React.useEffect(() => { document.body.className = dark ? 'dark' : 'light'; }, [dark]);
   const clamp = (v,lo,hi) => Math.max(lo, Math.min(hi, isNaN(v)?lo:v));
   const getElectronLimits = (z) => {
@@ -479,7 +481,7 @@ function App() {
     const svgEl = document.querySelector('.atom-svg');
     if (!svgEl) return;
     const svgClone = svgEl.cloneNode(true);
-    const PPI = 96;
+    const PPI = exportDPI;
     const dpcm = PPI / 2.54;
     const px = exportCm * dpcm;
     svgClone.setAttribute('width', px);
@@ -710,7 +712,9 @@ function App() {
                 onChange={e => setExportCm(parseFloat(e.target.value) || 8)}/>
             </div>
             <div className="modal-row">
-              <label className="modal-label">Resolution: 300 DPI (book print)</label>
+              <label className="modal-label">DPI</label>
+              <input type="number" className="modal-input" value={exportDPI} min="72" max="600" step="1"
+                onChange={e => setExportDPI(parseInt(e.target.value) || 300)}/>
             </div>
             <div className="modal-btns">
               <button className="modal-btn" onClick={() => setShowExport(false)}>Cancel</button>
