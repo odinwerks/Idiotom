@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Atom Visualizer</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+<script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Roboto', sans-serif;
+  display: flex; height: 100vh; overflow: hidden;
+  transition: background 0.3s, color 0.3s;
+}
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+/* ════ DARK ════ */
+body.dark {
+  background:#04040f; color:#c8d4ff;
+  --sb-bg:#07091e; --sb-border:#141840; --sb-hdr-border:#0e1230;
+  --title-col:#3a4880; --name-col:#e8f0ff;
+  --card-bg:linear-gradient(135deg,#0d1235,#0a0f28); --card-border:#1c2258;
+  --badge-bg:linear-gradient(145deg,#1e2a6a,#111840); --badge-border:#2a3880; --badge-col:#90b0ff;
+  --elem-name:#d0dcff; --elem-meta:#3a4870;
+  --sec-title:#2a3460; --lbl:#7080b0;
+  --vd-bg:#0d1030; --vd-border:#1e2460; --vd-col:#a0b0e0;
+  --btn-bg:#0d1030; --btn-border:#1e2460; --btn-col:#a0b0e0;
+  --btn-hbg:#161a40; --btn-hborder:#2e3870;
+  --inp-bg:#0b0e28; --inp-border:#1a2050; --inp-focus:#3050a0;
+  --st-bg:#07091e; --st-row-border:#0b0e24; --st-lbl:#3a4870;
+  --st-bar-bg:#0d1030; --st-cnt:#6080c0;
+  --cv-bg:radial-gradient(ellipse at 50% 50%,#08092a 0%,#04040f 70%);
+  --dot-col:#1a2060; --dot-op:0.12;
+  --ring-stroke:#0c183e; --ring-halo:#1a2e6a; --ring-lbl:#1a2860;
+  --ring-w:1.4; --ring-halo-op:0.18; --ring-op:1;
+  --leg-bg:#07091ecc; --leg-border:#0e1230; --leg-col:#4a5880;
+  --empty-col:#1a2450; --scroll-thumb:#1e2560;
+  --pt-bg:#04060f; --pt-border:#0e1230; --pt-cell:#0a0d22;
+  --pt-cell-hover:#161a3c; --pt-cell-border:#141840;
+  --pt-cell-active:#1e2860; --pt-active-border:#4060c0;
+  --pt-sym:#a0b0e0; --pt-z:#3a4870;
+}
+/* ════ LIGHT ════ */
+body.light {
+  background:#f2f5ff; color:#1a2050;
+  --sb-bg:#ffffff; --sb-border:#d0d8f0; --sb-hdr-border:#e0e8f8;
+  --title-col:#8090c0; --name-col:#0a1030;
+  --card-bg:#ffffff; --card-border:#e0e0e0;
+  --badge-bg:#f0f0f0; --badge-border:#d0d0d0; --badge-col:#2040a0;
+  --elem-name:#1a2860; --elem-meta:#7080b0;
+  --sec-title:#8090c0; --lbl:#4a5890;
+  --vd-bg:#f0f0f0; --vd-border:#d0d0d0; --vd-col:#3050a0;
+  --btn-bg:#f0f0f0; --btn-border:#d0d0d0; --btn-col:#3050a0;
+  --btn-hbg:#e0e0e0; --btn-hborder:#b0b0b0;
+  --inp-bg:#ffffff; --inp-border:#d0d0d0; --inp-focus:#3050a0;
+  --st-bg:#ffffff; --st-row-border:#f0f0f0; --st-lbl:#8090c0;
+  --st-bar-bg:#e0e0e0; --st-cnt:#4060c0;
+  --cv-bg:#ffffff;
+  --dot-col:#d0d0d0; --dot-op:0.05;
+  --ring-stroke:#888888; --ring-halo:#bbbbbb; --ring-lbl:#666666;
+  --ring-w:1.6; --ring-halo-op:0.13; --ring-op:0.9;
+  --leg-bg:#ffffffee; --leg-border:#e0e0e0; --leg-col:#5060a0;
+  --empty-col:#8090c0; --scroll-thumb:#c0c0c0;
+  --pt-bg:#ffffff; --pt-border:#e0e8f8; --pt-cell:#f8f8f8;
+  --pt-cell-hover:#e8e8e8; --pt-cell-border:#d0d0d0;
+  --pt-cell-active:#d8d8d8; --pt-active-border:#3060c0;
+  --pt-sym:#1a2860; --pt-z:#8090c0;
+}
+::-webkit-scrollbar-thumb { background:var(--scroll-thumb); border-radius:3px; }
+#layout { display:flex; width:100vw; height:100vh; overflow:hidden; }
+.sidebar {
+  width:320px; min-width:320px; flex-shrink:0;
+  background:var(--sb-bg); border-right:1px solid var(--sb-border);
+  display:flex; flex-direction:column; z-index:10;
+  transition:background 0.3s, border-color 0.3s;
+}
+.sidebar-header { padding:10px 20px 10px; border-bottom:1px solid var(--sb-hdr-border); }
+.header-top { display:flex; justify-content:space-between; align-items:flex-start; }
+.app-title { font-size:9px; letter-spacing:3px; text-transform:uppercase; color:var(--title-col); font-family:'Space Mono',monospace; margin-bottom:3px; }
+.app-name { font-size:19px; font-weight:800; color:var(--name-col); letter-spacing:-0.5px; }
+.theme-toggle { width:38px; height:22px; background:var(--btn-bg); border:1px solid var(--btn-border); border-radius:11px; cursor:pointer; display:flex; align-items:center; padding:2px; transition:all 0.2s; flex-shrink:0; margin-top:2px; }
+.theme-toggle-knob { width:16px; height:16px; border-radius:50%; transition:transform 0.2s; font-size:10px; display:flex; align-items:center; justify-content:center; }
+body.dark .theme-toggle-knob { transform:translateX(0); background:#3050a0; }
+body.light .theme-toggle-knob { transform:translateX(16px); background:#ffcc44; }
+.sidebar-content { padding:14px 14px; flex:1; display:flex; flex-direction:column; gap:8px; overflow-y:auto; overflow-x:hidden; }
+.element-card { background:var(--card-bg); border:1px solid var(--card-border); border-radius:12px; padding:12px; display:flex; align-items:center; gap:12px; transition:background 0.3s, border-color 0.3s; }
+.element-symbol-badge { width:48px; height:48px; border-radius:10px; background:var(--badge-bg); border:1px solid var(--badge-border); display:flex; align-items:center; justify-content:center; font-size:17px; font-weight:800; color:var(--badge-col); font-family:'Space Mono',monospace; flex-shrink:0; }
+.element-info { flex:1; min-width:0; }
+.element-name { font-size:13px; font-weight:700; color:var(--elem-name); }
+.element-meta { font-size:10px; color:var(--elem-meta); font-family:'Space Mono',monospace; margin-top:2px; }
+.element-charge { font-size:10px; margin-top:2px; font-weight:700; }
+.charge-neutral { color:#2aaa80; } .charge-pos { color:#ee4444; } .charge-neg { color:#4488ee; }
+.section-title { font-size:9px; letter-spacing:2.5px; text-transform:uppercase; color:var(--sec-title); font-family:'Space Mono',monospace; margin-bottom:8px; }
+.param-row { margin-bottom:6px; }
+.param-control { display:flex; align-items:center; gap:6px; }
+.ctrl-btn { width:28px; height:28px; background:var(--btn-bg); border:1px solid var(--btn-border); color:var(--btn-col); border-radius:6px; cursor:pointer; font-size:15px; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:all 0.15s; line-height:1; font-family:'Space Mono',monospace; }
+.ctrl-btn:hover { background:var(--btn-hbg); border-color:var(--btn-hborder); color:var(--name-col); }
+.ctrl-input { flex:1; background:var(--inp-bg); border:1px solid var(--inp-border); border-radius:6px; padding:4px 6px; font-size:13px; font-weight:700; text-align:center; outline:none; font-family:'Space Mono',monospace; transition:border-color 0.2s; color:inherit; }
+.ctrl-input:focus { border-color:var(--inp-focus); }
+.ctrl-input-proton { color:#dd2222 !important; }
+body.dark .ctrl-input-neutron { color:#c0c0cc !important; }
+body.light .ctrl-input-neutron { color:#666 !important; }
+.ctrl-input-electron { color:#2288dd !important; }
+/* ── Periodic Table ── */
+.pt-grid {
+  display:grid;
+  grid-template-columns: repeat(18, 1fr);
+  grid-template-rows: repeat(10, 1fr);
+  gap:0;
+  width:100%;
+  min-width:0;
+}
+.pt-cell {
+  background:var(--pt-cell);
+  border:1px solid var(--pt-cell-border);
+  border-radius:0;
+  cursor:pointer;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:2px;
+  transition:background 0.12s, border-color 0.12s;
+  min-width:0; min-height:0;
+  aspect-ratio:1;
+  overflow:hidden;
+}
+.pt-cell:hover { background:var(--pt-cell-hover); border-color:var(--pt-active-border); }
+.pt-cell.active { background:var(--pt-cell-active); border-color:var(--pt-active-border); border-width:1.5px; }
+.pt-sym { font-size:10px; font-weight:700; color:var(--pt-sym); line-height:1; font-family:'Space Mono',monospace; }
+.pt-gap { /* empty spacer */ }
+/* lanthanide/actinide row gap */
+.pt-row-gap { grid-column:1/-1; height:4px; }
+/* Category colours (subtle tint on border) */
+.pt-alkali { border-color:#cc440040; }
+.pt-alkaline { border-color:#cc880040; }
+.pt-transition { border-color:#44668840; }
+.pt-post-trans { border-color:#44884440; }
+.pt-metalloid { border-color:#888800; opacity:0.7; }
+.pt-nonmetal { border-color:#0055aa40; }
+.pt-halogen { border-color:#008844; opacity:0.8; }
+.pt-noble { border-color:#8800aa40; }
+.pt-lanthanide { border-color:#aa550040; }
+.pt-actinide { border-color:#aa440040; }
+body.dark .pt-cell.active .pt-sym { color:#c0d8ff; }
+body.dark .pt-metalloid { border-color:#888800; opacity:1; }
+body.dark .pt-halogen { border-color:#008844; opacity:1; }
+.shell-table { background:var(--st-bg); border:1px solid var(--sb-hdr-border); border-radius:10px; transition:background 0.3s; max-height:140px; overflow-y:auto; }
+.shell-row { display:flex; align-items:center; padding:5px 12px; font-size:10px; border-bottom:1px solid var(--st-row-border); }
+.shell-row:last-child { border-bottom:none; }
+.shell-label { color:var(--st-lbl); font-family:'Space Mono',monospace; min-width:28px; }
+.shell-fill-bar { flex:1; height:4px; background:var(--st-bar-bg); border-radius:2px; margin:0 10px; overflow:hidden; }
+.shell-fill-inner { height:100%; background:linear-gradient(90deg,#1a60c0,#60c0ff); border-radius:2px; transition:width 0.35s ease; }
+body.light .shell-fill-inner { background:linear-gradient(90deg,#3060e0,#60a8ff); }
+.shell-count { font-family:'Space Mono',monospace; color:var(--st-cnt); font-size:9px; min-width:38px; text-align:right; }
+/* ── Canvas ── */
+.canvas-area {
+  flex:1; min-width:0;
+  display:flex; align-items:center; justify-content:center;
+  overflow:hidden; position:relative;
+  background:var(--cv-bg); transition:background 0.3s;
+}
+.canvas-area::before {
+  content:''; position:absolute; inset:0;
+  background-image:radial-gradient(circle, var(--dot-col) 1px, transparent 1px);
+  background-size:38px 38px; opacity:var(--dot-op); pointer-events:none;
+}
+.atom-svg { width:100%; height:100%; display:block; }
+.legend { position:absolute; bottom:16px; right:18px; display:flex; gap:12px; background:var(--leg-bg); border:1px solid var(--leg-border); border-radius:10px; padding:8px 14px; backdrop-filter:blur(8px); transition:background 0.3s, border-color 0.3s; }
+.legend-item { display:flex; align-items:center; gap:6px; font-size:10px; color:var(--leg-col); }
+.legend-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+.sidebar-footer { border-top:1px solid var(--sb-hdr-border); }
+</style>
+</head>
+<body class="dark">
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useMemo } = React;
+/* ══════════════════════════════════════════════
+   ELEMENT DATA — all 118 elements
+   [Z, symbol, name, neutrons_of_most_stable_isotope, pt_row, pt_col, category]
+   ══════════════════════════════════════════════ */
+const ELEMENTS = [
+  [1, 'H', 'Hydrogenium', 0, 1, 1, 'nonmetal'],
+  [2, 'He', 'Helium', 2, 1, 18, 'noble'],
+  [3, 'Li', 'Lithium', 4, 2, 1, 'alkali'],
+  [4, 'Be', 'Beryllium', 5, 2, 2, 'alkaline'],
+  [5, 'B', 'Borum', 6, 2, 13, 'metalloid'],
+  [6, 'C', 'Carboneum', 6, 2, 14, 'nonmetal'],
+  [7, 'N', 'Nitrogenium', 7, 2, 15, 'nonmetal'],
+  [8, 'O', 'Oxygenium', 8, 2, 16, 'nonmetal'],
+  [9, 'F', 'Fluorum', 10, 2, 17, 'halogen'],
+  [10, 'Ne', 'Neon', 10, 2, 18, 'noble'],
+  [11, 'Na', 'Natrium', 12, 3, 1, 'alkali'],
+  [12, 'Mg', 'Magnesium', 12, 3, 2, 'alkaline'],
+  [13, 'Al', 'Aluminium', 14, 3, 13, 'post-trans'],
+  [14, 'Si', 'Silicium', 14, 3, 14, 'metalloid'],
+  [15, 'P', 'Phosphorus', 16, 3, 15, 'nonmetal'],
+  [16, 'S', 'Sulfur', 16, 3, 16, 'nonmetal'],
+  [17, 'Cl', 'Chlorum', 18, 3, 17, 'halogen'],
+  [18, 'Ar', 'Argon', 22, 3, 18, 'noble'],
+  [19, 'K', 'Kalium', 20, 4, 1, 'alkali'],
+  [20, 'Ca', 'Calcium', 20, 4, 2, 'alkaline'],
+  [21, 'Sc', 'Scandium', 24, 4, 3, 'transition'],
+  [22, 'Ti', 'Titanium', 26, 4, 4, 'transition'],
+  [23, 'V', 'Vanadium', 28, 4, 5, 'transition'],
+  [24, 'Cr', 'Chromium', 28, 4, 6, 'transition'],
+  [25, 'Mn', 'Manganum', 30, 4, 7, 'transition'],
+  [26, 'Fe', 'Ferrum', 30, 4, 8, 'transition'],
+  [27, 'Co', 'Cobaltum', 32, 4, 9, 'transition'],
+  [28, 'Ni', 'Niccolum', 30, 4, 10, 'transition'],
+  [29, 'Cu', 'Cuprum', 34, 4, 11, 'transition'],
+  [30, 'Zn', 'Zincum', 34, 4, 12, 'transition'],
+  [31, 'Ga', 'Gallium', 38, 4, 13, 'post-trans'],
+  [32, 'Ge', 'Germanium', 42, 4, 14, 'metalloid'],
+  [33, 'As', 'Arsenicum', 42, 4, 15, 'metalloid'],
+  [34, 'Se', 'Selenium', 46, 4, 16, 'nonmetal'],
+  [35, 'Br', 'Bromum', 44, 4, 17, 'halogen'],
+  [36, 'Kr', 'Krypton', 48, 4, 18, 'noble'],
+  [37, 'Rb', 'Rubidium', 48, 5, 1, 'alkali'],
+  [38, 'Sr', 'Strontium', 50, 5, 2, 'alkaline'],
+  [39, 'Y', 'Yttrium', 50, 5, 3, 'transition'],
+  [40, 'Zr', 'Zirconium', 50, 5, 4, 'transition'],
+  [41, 'Nb', 'Niobium', 52, 5, 5, 'transition'],
+  [42, 'Mo', 'Molybdaenum', 56, 5, 6, 'transition'],
+  [43, 'Tc', 'Technetium', 55, 5, 7, 'transition'],
+  [44, 'Ru', 'Ruthenium', 58, 5, 8, 'transition'],
+  [45, 'Rh', 'Rhodium', 58, 5, 9, 'transition'],
+  [46, 'Pd', 'Palladium', 60, 5, 10, 'transition'],
+  [47, 'Ag', 'Argentum', 60, 5, 11, 'transition'],
+  [48, 'Cd', 'Cadmium', 66, 5, 12, 'transition'],
+  [49, 'In', 'Indium', 66, 5, 13, 'post-trans'],
+  [50, 'Sn', 'Stannum', 70, 5, 14, 'post-trans'],
+  [51, 'Sb', 'Stibium', 70, 5, 15, 'metalloid'],
+  [52, 'Te', 'Tellurium', 78, 5, 16, 'metalloid'],
+  [53, 'I', 'Iodum', 74, 5, 17, 'halogen'],
+  [54, 'Xe', 'Xenon', 78, 5, 18, 'noble'],
+  [55, 'Cs', 'Caesium', 78, 6, 1, 'alkali'],
+  [56, 'Ba', 'Barium', 82, 6, 2, 'alkaline'],
+  [57, 'La', 'Lanthanum', 82, 6, 3, 'lanthanide'],
+  [58, 'Ce', 'Cerium', 82, 9, 4, 'lanthanide'],
+  [59, 'Pr', 'Praseodymium', 82, 9, 5, 'lanthanide'],
+  [60, 'Nd', 'Neodymium', 82, 9, 6, 'lanthanide'],
+  [61, 'Pm', 'Promethium', 84, 9, 7, 'lanthanide'],
+  [62, 'Sm', 'Samarium', 90, 9, 8, 'lanthanide'],
+  [63, 'Eu', 'Europium', 90, 9, 9, 'lanthanide'],
+  [64, 'Gd', 'Gadolinium', 94, 9, 10, 'lanthanide'],
+  [65, 'Tb', 'Terbium', 94, 9, 11, 'lanthanide'],
+  [66, 'Dy', 'Dysprosium', 98, 9, 12, 'lanthanide'],
+  [67, 'Ho', 'Holmium', 98, 9, 13, 'lanthanide'],
+  [68, 'Er', 'Erbium', 98, 9, 14, 'lanthanide'],
+  [69, 'Tm', 'Thulium', 100, 9, 15, 'lanthanide'],
+  [70, 'Yb', 'Ytterbium', 104, 9, 16, 'lanthanide'],
+  [71, 'Lu', 'Lutetium', 104, 9, 17, 'lanthanide'],
+  [72, 'Hf', 'Hafnium', 108, 6, 4, 'transition'],
+  [73, 'Ta', 'Tantalum', 108, 6, 5, 'transition'],
+  [74, 'W', 'Wolframium', 110, 6, 6, 'transition'],
+  [75, 'Re', 'Rhenium', 112, 6, 7, 'transition'],
+  [76, 'Os', 'Osmium', 116, 6, 8, 'transition'],
+  [77, 'Ir', 'Iridium', 116, 6, 9, 'transition'],
+  [78, 'Pt', 'Platinum', 117, 6, 10, 'transition'],
+  [79, 'Au', 'Aurum', 118, 6, 11, 'transition'],
+  [80, 'Hg', 'Hydrargyrum', 122, 6, 12, 'transition'],
+  [81, 'Tl', 'Thallium', 124, 6, 13, 'post-trans'],
+  [82, 'Pb', 'Plumbum', 126, 6, 14, 'post-trans'],
+  [83, 'Bi', 'Bismuthum', 126, 6, 15, 'post-trans'],
+  [84, 'Po', 'Polonium', 125, 6, 16, 'post-trans'],
+  [85, 'At', 'Astatium', 125, 6, 17, 'halogen'],
+  [86, 'Rn', 'Radon', 136, 6, 18, 'noble'],
+  [87, 'Fr', 'Francium', 136, 7, 1, 'alkali'],
+  [88, 'Ra', 'Radium', 138, 7, 2, 'alkaline'],
+  [89, 'Ac', 'Actinium', 138, 7, 3, 'actinide'],
+  [90, 'Th', 'Thorium', 142, 10, 4, 'actinide'],
+  [91, 'Pa', 'Protactinium', 140, 10, 5, 'actinide'],
+  [92, 'U', 'Uranium', 146, 10, 6, 'actinide'],
+  [93, 'Np', 'Neptunium', 144, 10, 7, 'actinide'],
+  [94, 'Pu', 'Plutonium', 150, 10, 8, 'actinide'],
+  [95, 'Am', 'Americium', 148, 10, 9, 'actinide'],
+  [96, 'Cm', 'Curium', 151, 10, 10, 'actinide'],
+  [97, 'Bk', 'Berkelium', 150, 10, 11, 'actinide'],
+  [98, 'Cf', 'Californium', 153, 10, 12, 'actinide'],
+  [99, 'Es', 'Einsteinium', 153, 10, 13, 'actinide'],
+  [100,'Fm', 'Fermium', 157, 10, 14, 'actinide'],
+  [101,'Md', 'Mendelevium', 157, 10, 15, 'actinide'],
+  [102,'No', 'Nobelium', 157, 10, 16, 'actinide'],
+  [103,'Lr', 'Lawrencium', 159, 10, 17, 'actinide'],
+  [104,'Rf', 'Rutherfordium', 161, 7, 4, 'transition'],
+  [105,'Db', 'Dubnium', 163, 7, 5, 'transition'],
+  [106,'Sg', 'Seaborgium', 165, 7, 6, 'transition'],
+  [107,'Bh', 'Bohrium', 163, 7, 7, 'transition'],
+  [108,'Hs', 'Hassium', 169, 7, 8, 'transition'],
+  [109,'Mt', 'Meitnerium', 169, 7, 9, 'transition'],
+  [110,'Ds', 'Darmstadtium', 171, 7, 10, 'transition'],
+  [111,'Rg', 'Roentgenium', 171, 7, 11, 'transition'],
+  [112,'Cn', 'Copernicium', 173, 7, 12, 'transition'],
+  [113,'Nh', 'Nihonium', 173, 7, 13, 'post-trans'],
+  [114,'Fl', 'Flerovium', 175, 7, 14, 'post-trans'],
+  [115,'Mc', 'Moscovium', 175, 7, 15, 'post-trans'],
+  [116,'Lv', 'Livermorium', 177, 7, 16, 'post-trans'],
+  [117,'Ts', 'Tennessine', 177, 7, 17, 'halogen'],
+  [118,'Og', 'Oganesson', 176, 7, 18, 'noble'],
+];
+const ELEM_BY_Z = {};
+ELEMENTS.forEach(e => { ELEM_BY_Z[e[0]] = e; });
+const CAT_CLASS = {
+  'alkali':'pt-alkali', 'alkaline':'pt-alkaline', 'transition':'pt-transition',
+  'post-trans':'pt-post-trans', 'metalloid':'pt-metalloid', 'nonmetal':'pt-nonmetal',
+  'halogen':'pt-halogen', 'noble':'pt-noble', 'lanthanide':'pt-lanthanide', 'actinide':'pt-actinide',
+};
+const SHELL_MAX = [2, 8, 18, 32, 32, 18, 8];
+function distributeElectrons(n) {
+  const s = []; let r = Math.max(0, n);
+  for (let i = 0; i < SHELL_MAX.length; i++) {
+    if (r <= 0) break;
+    const f = Math.min(r, SHELL_MAX[i]); s.push(f); r -= f;
+  }
+  return s;
+}
+const GOLDEN = Math.PI * (3 - Math.sqrt(5));
+function sunflower(N, R) {
+  if (N === 0) return [];
+  if (N === 1) return [{x:0,y:0}];
+  return Array.from({length:N}, (_,i) => {
+    const r = Math.sqrt((i+0.5)/N) * R;
+    const a = i * GOLDEN;
+    return {x: r*Math.cos(a), y: r*Math.sin(a)};
+  });
+}
+function diskR(N, r) {
+  if (N <= 0) return r * 1.5;
+  if (N === 1) return r * 1.6;
+  return r * (Math.sqrt(N / 0.78) + 2.2);
+}
+function seededShuffle(arr, seed) {
+  const a = [...arr]; let s = seed >>> 0;
+  for (let i = a.length-1; i > 0; i--) {
+    s = (Math.imul(s, 1664525) + 1013904223) >>> 0;
+    const j = s % (i+1);
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function buildPTGrid() {
+  const grid = {};
+  ELEMENTS.forEach(e => {
+    const key = `${e[4]},${e[5]}`;
+    grid[key] = e;
+  });
+  return grid;
+}
+function PeriodicTable({ activeZ, onSelect }) {
+  const grid = useMemo(() => buildPTGrid(), []);
+  const rows = [1,2,3,4,5,6,7, 8, 9,10];
+  return (
+    <div style={{padding:'0'}}>
+      <div className="pt-grid">
+        {rows.map(row => (
+          row === 8
+            ? <div key="gap" className="pt-row-gap"/>
+            : Array.from({length:18}, (_,ci) => {
+                const col = ci + 1;
+                const key = `${row},${col}`;
+                const el = grid[key];
+                if (!el) {
+                  if (row === 9 && col === 1) return (
+                    <div key={`${row}-${col}`} style={{gridColumn:'1/4', display:'flex', alignItems:'center', justifyContent:'center'}}>
+                      <span style={{fontSize:'6px', color:'var(--pt-z)', fontFamily:"'Space Mono',monospace", textAlign:'center', lineHeight:1.2}}>57–71</span>
+                    </div>
+                  );
+                  if (row === 10 && col === 1) return (
+                    <div key={`${row}-${col}`} style={{gridColumn:'1/4', display:'flex', alignItems:'center', justifyContent:'center'}}>
+                      <span style={{fontSize:'6px', color:'var(--pt-z)', fontFamily:"'Space Mono',monospace", textAlign:'center', lineHeight:1.2}}>89–103</span>
+                    </div>
+                  );
+                  if ((row === 9 || row === 10) && col <= 3) return null;
+                  return <div key={`${row}-${col}`} style={{gridRow:row, gridColumn:col}}/>;
+                }
+                const [z, sym, , , , , cat] = el;
+                const isActive = z === activeZ;
+                return (
+                  <div
+                    key={`${row}-${col}`}
+                    className={`pt-cell ${CAT_CLASS[cat]||''} ${isActive?'active':''}`}
+                    style={{gridRow:row, gridColumn:col}}
+                    onClick={() => onSelect(z)}
+                    title={`${el[2]} (Z=${z})`}
+                  >
+                    <span className="pt-sym">{sym}</span>
+                  </div>
+                );
+              }).filter(Boolean)
+        ))}
+      </div>
+    </div>
+  );
+}
+function App() {
+  const [protons, setProtons] = useState(6);
+  const [neutrons, setNeutrons] = useState(6);
+  const [electrons, setElectrons] = useState(6);
+  const [dark, setDark] = useState(true);
+  React.useEffect(() => { document.body.className = dark ? 'dark' : 'light'; }, [dark]);
+  const clamp = (v,lo,hi) => Math.max(lo, Math.min(hi, isNaN(v)?lo:v));
+  const getElectronLimits = (z) => {
+    if (z === 0) return {min:0, max:0};
+    const maxGain = 3;
+    const maxLoss = (z <= 20) ? 4 : 6;
+    return {min: Math.max(0, z - maxLoss), max: z + maxGain};
+  };
+  const handleProtons = (raw) => {
+    const p = clamp(parseInt(raw)||0, 0, 118);
+    setProtons(p);
+    const el = ELEM_BY_Z[p];
+    if (el) setNeutrons(el[3]);
+    const {min, max} = getElectronLimits(p);
+    setElectrons(clamp(p, min, max));
+  };
+  const handlePTSelect = (z) => {
+    const el = ELEM_BY_Z[z];
+    if (!el) return;
+    setProtons(z);
+    setNeutrons(el[3]);
+    const {min, max} = getElectronLimits(z);
+    setElectrons(clamp(z, min, max));
+  };
+  const {min: eMin, max: eMax} = getElectronLimits(protons);
+  const elemEntry = ELEM_BY_Z[protons];
+  const elementName = elemEntry ? elemEntry[2] : '—';
+  const elementSym = elemEntry ? elemEntry[1] : '?';
+  const charge = protons - electrons;
+  const shellDist = useMemo(() => distributeElectrons(electrons), [electrons]);
+  const NR = 9;
+  const totalN = protons + neutrons;
+  const DR = diskR(totalN, NR);
+  const nucleonPos = useMemo(() => {
+    const pts = sunflower(totalN, DR);
+    const seq = [];
+    let p = protons, n = neutrons;
+    while (p > 0 || n > 0) {
+      if (p > 0) { seq.push('proton'); p--; }
+      if (n > 0) { seq.push('neutron'); n--; }
+    }
+    const mixed = seededShuffle(seq, protons * 397 + neutrons * 1031);
+    return pts.map((pt,i) => ({...pt, type: mixed[i]||'neutron'}));
+  }, [protons, neutrons, totalN, DR]);
+  const SHELL_GAP = 48;
+  const FIRST_R = Math.max(DR + 46, 54);
+  const shellRadii = shellDist.map((_,i) => FIRST_R + i * SHELL_GAP);
+  const outerR = shellRadii.length > 0 ? shellRadii[shellRadii.length-1] + 34 : DR + 82;
+  const PAD = 44;
+  const SZ = outerR * 2 + PAD * 2;
+  const cx = SZ/2, cy = SZ/2;
+  const ringStroke = dark ? '#0c183e' : '#111111';
+  const ringHalo = dark ? '#1a2e6a' : '#555555';
+  const ringLabel = dark ? '#1a2860' : '#222222';
+  const ringW = dark ? 1.4 : 1.6;
+  const ringHaloOp = dark ? 0.18 : 0.13;
+  const ringOp = dark ? 1.0 : 0.9;
+  const emptyCol = dark ? '#1a2450' : '#8090c0';
+  const clipR = DR + NR * 1.15;
+  return (
+    <div id="layout">
+      <aside className="sidebar">
+        <div className="sidebar-header">
+          <div className="header-top">
+            <div>
+              <div className="app-title">Idiot Technologies</div>
+              <div className="app-name">Atom Visualizer</div>
+            </div>
+            <button className="theme-toggle" onClick={() => setDark(!dark)}
+              title={dark ? 'Light mode' : 'Dark mode'}>
+              <div className="theme-toggle-knob">{dark ? '🌙' : '☀️'}</div>
+            </button>
+          </div>
+        </div>
+        <div className="sidebar-content">
+          <div className="element-card">
+            <div className="element-symbol-badge">{elementSym}</div>
+            <div className="element-info">
+              <div className="element-name">{elementName}</div>
+              <div className="element-meta">Z={protons} · A={protons+neutrons}</div>
+              <div className={`element-charge ${charge===0?'charge-neutral':charge>0?'charge-pos':'charge-neg'}`}>
+                {charge===0?'Neutral atom':charge>0?`${charge}⁺ cation`:`${Math.abs(charge)}⁻ anion`}
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className="section-title">Nucleus &amp; Electrons</div>
+            {[
+              {label:'Protons', val:protons, cls:'proton', fn:handleProtons, lo:0, hi:118},
+              {label:'Neutrons', val:neutrons, cls:'neutron', fn:v=>setNeutrons(clamp(parseInt(v)||0,0,400)), lo:0, hi:400},
+              {label:'Electrons', val:electrons, cls:'electron', fn:v=>setElectrons(clamp(parseInt(v)||0, eMin, eMax)), lo:eMin, hi:eMax},
+            ].map(({label,val,cls,fn,lo,hi}) => (
+              <div className="param-row" key={cls} style={{display:'flex', alignItems:'center', gap:'6px'}}>
+                <span className="param-label-text" style={{minWidth:'70px', color: cls === 'proton' ? '#dd2222' : cls === 'neutron' ? (dark ? '#c0c0cc' : '#666') : '#2288dd'}}>{label}</span>
+                <button className="ctrl-btn" onClick={() => fn(val-1)}>−</button>
+                <input className={`ctrl-input ctrl-input-${cls}`}
+                  type="number" value={val} min={lo} max={hi}
+                  onChange={e => fn(e.target.value)}/>
+                <button className="ctrl-btn" onClick={() => fn(val+1)}>+</button>
+              </div>
+            ))}
+          </div>
+          {shellDist.length > 0 && (
+            <div>
+              <div className="section-title">Electron Configuration</div>
+              <div className="shell-table">
+                {shellDist.map((count, i) => (
+                  <div className="shell-row" key={i}>
+                    <span className="shell-label">n={i+1}</span>
+                    <div className="shell-fill-bar">
+                      <div className="shell-fill-inner" style={{width:`${(count/SHELL_MAX[i]||0)*100}%`}}/>
+                    </div>
+                    <span className="shell-count">{count}/{SHELL_MAX[i]}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+        <div className="sidebar-footer">
+          <div className="section-title" style={{padding:'8px 14px 8px 14px'}}>Periodic Table</div>
+          <div>
+            <PeriodicTable activeZ={protons} onSelect={handlePTSelect}/>
+          </div>
+        </div>
+      </aside>
+      <main className="canvas-area">
+        <svg className="atom-svg"
+          viewBox={`0 0 ${SZ} ${SZ}`}
+          preserveAspectRatio="xMidYMid meet"
+          xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="gP" cx="38%" cy="32%" r="65%">
+              <stop offset="0%" stopColor="#f08080"/>
+              <stop offset="30%" stopColor="#e03030"/>
+              <stop offset="65%" stopColor="#b00000"/>
+              <stop offset="100%" stopColor="#500000"/>
+            </radialGradient>
+            <radialGradient id="gPrim" cx="50%" cy="50%" r="50%">
+              <stop offset="62%" stopColor="transparent"/>
+              <stop offset="100%" stopColor="#28000050"/>
+            </radialGradient>
+            <radialGradient id="gN" cx="38%" cy="32%" r="65%">
+              <stop offset="0%" stopColor="#ffffff"/>
+              <stop offset="30%" stopColor="#e0e0e4"/>
+              <stop offset="68%" stopColor="#b0b0b8"/>
+              <stop offset="100%" stopColor="#5a5a60"/>
+            </radialGradient>
+            <radialGradient id="gNrim" cx="50%" cy="50%" r="50%">
+              <stop offset="62%" stopColor="transparent"/>
+              <stop offset="100%" stopColor="#28282850"/>
+            </radialGradient>
+            <radialGradient id="gE" cx="36%" cy="28%" r="68%">
+              <stop offset="0%" stopColor="#ecf9ff"/>
+              <stop offset="25%" stopColor="#7ed4ff"/>
+              <stop offset="70%" stopColor="#1e90ee"/>
+              <stop offset="100%" stopColor="#0a3a80"/>
+            </radialGradient>
+            <filter id="fE" x="-100%" y="-100%" width="300%" height="300%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="4.5" result="blur"/>
+              <feColorMatrix in="blur" type="matrix" values="0 0 0.8 0 0.1 0 0.2 0.8 0 0.1 0 0 1 0 0 0 0 0 0.45 0" result="t"/>
+              <feMerge><feMergeNode in="t"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <filter id="fNuc" x="-40%" y="-40%" width="180%" height="180%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="9" result="blur"/>
+              <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0.04 0 0 0 0 0 0 0 0 0 0 0 0 0 0.42 0" result="g"/>
+              <feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <filter id="fOrb" x="-4%" y="-4%" width="108%" height="108%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="0.8" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <clipPath id="nucClip">
+              <circle cx={cx} cy={cy} r={clipR}/>
+            </clipPath>
+          </defs>
+          {totalN > 0 && <>
+            <circle cx={cx} cy={cy} r={clipR+20} fill="none" stroke="#bb000016" strokeWidth="20"/>
+            <circle cx={cx} cy={cy} r={clipR+5} fill="none" stroke="#cc000022" strokeWidth="4"/>
+          </>}
+          {shellRadii.map((r,i) => (
+            <g key={`ring-${i}`} filter="url(#fOrb)">
+              <circle cx={cx} cy={cy} r={r} fill="none"
+                stroke={ringHalo} strokeWidth={ringW*2.4} opacity={ringHaloOp}/>
+              <circle cx={cx} cy={cy} r={r} fill="none"
+                stroke={ringStroke} strokeWidth={ringW}
+                strokeDasharray="5.5 4" opacity={ringOp}/>
+              <text x={cx+r+9} y={cy} fill={ringLabel} fontSize="9"
+                fontFamily="Space Mono, monospace" dominantBaseline="middle" opacity="0.85">
+                n{i+1}
+              </text>
+            </g>
+          ))}
+          <g filter="url(#fNuc)" clipPath="url(#nucClip)">
+            {nucleonPos.map((pos,i) => {
+              const px = cx+pos.x, py = cy+pos.y, isP = pos.type==='proton';
+              return (
+                <g key={`n${i}`}>
+                  <circle cx={px} cy={py} r={NR} fill={isP?'url(#gP)':'url(#gN)'}/>
+                  <circle cx={px} cy={py} r={NR} fill={isP?'url(#gPrim)':'url(#gNrim)'}/>
+                  <ellipse
+                    cx={px - NR*0.25} cy={py - NR*0.28}
+                    rx={NR*0.22} ry={NR*0.14}
+                    fill="white" opacity={isP ? 0.28 : 0.55}
+                    transform={`rotate(-40,${px-NR*0.25},${py-NR*0.28})`}/>
+                </g>
+              );
+            })}
+          </g>
+          {totalN > 1 &&
+            <circle cx={cx} cy={cy} r={clipR}
+              fill="none" stroke={dark?'#cc000028':'#cc000018'} strokeWidth="1"/>
+          }
+          {shellDist.map((count,si) => {
+            const r = shellRadii[si], eR = 5.5;
+            return Array.from({length:count}, (_,j) => {
+              const a = (2*Math.PI*j)/count - Math.PI/2;
+              const ex = cx+r*Math.cos(a), ey = cy+r*Math.sin(a);
+              return (
+                <g key={`e-${si}-${j}`} filter="url(#fE)">
+                  <circle cx={ex} cy={ey} r={eR+3.5} fill="none"
+                    stroke="#3399ff" strokeWidth="1" opacity={dark?0.18:0.22}/>
+                  <circle cx={ex} cy={ey} r={eR} fill="url(#gE)"/>
+                  <ellipse
+                    cx={ex-eR*0.26} cy={ey-eR*0.26}
+                    rx={eR*0.30} ry={eR*0.18}
+                    fill="white" opacity="0.65"
+                    transform={`rotate(-38,${ex-eR*0.26},${ey-eR*0.26})`}/>
+                </g>
+              );
+            });
+          })}
+          {totalN === 0 && electrons === 0 &&
+            <text x={cx} y={cy} textAnchor="middle" dominantBaseline="middle"
+              fill={emptyCol} fontSize="13" fontFamily="Space Mono, monospace">
+              Select an element to begin
+            </text>
+          }
+        </svg>
+        <div className="legend">
+          <div className="legend-item">
+            <div className="legend-dot" style={{background:'radial-gradient(circle at 38% 32%,#f08080,#b00000,#500000)'}}/>
+            Proton
+          </div>
+          <div className="legend-item">
+            <div className="legend-dot" style={{background:'radial-gradient(circle at 38% 32%,#ffffff,#c0c0c4,#5a5a60)'}}/>
+            Neutron
+          </div>
+          <div className="legend-item">
+            <div className="legend-dot" style={{background:'radial-gradient(circle at 36% 28%,#ecf9ff,#7ed4ff,#1a5acc)'}}/>
+            Electron
+          </div>
+          <div className="legend-item">
+            <div style={{width:20,height:0,borderTop:`1.5px dashed ${ringStroke}`,marginTop:1}}/>
+            Orbital
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App/>);
+</script>
+</body>
+</html>
