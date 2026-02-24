@@ -10,7 +10,7 @@ An atom visualizer. Built it because I needed decent atom drawings for some phys
 - Electron shell visualization
 - Cation/anion support (add or remove electrons)
 - Shows atomic number (Z), mass number (A), and charge state
-- SVG export with customizable size and DPI (for book print)
+- SVG/PNG/BMP export with customizable size, DPI, background color, and transparency
 
 ## Screenshots
 
@@ -23,13 +23,16 @@ An atom visualizer. Built it because I needed decent atom drawings for some phys
 
 Open `Idiotom.html` in any browser. No install needed.
 
-## SVG Export
+## Export
 
 Click the ⬇ button to export. Options:
+- **Format**: SVG, PNG, or BMP
+- **Transparent background**: Available for PNG (disabled for BMP)
+- **Background color**: Custom color picker with hex input
 - **Size**: Width/height in cm (1:1 ratio)
 - **DPI**: Resolution - 300 for print, 72 for screen
 
-Exports with a white background for easy PDF embedding.
+SVG exports with a white background by default.
 
 ## Known limitations
 
