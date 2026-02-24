@@ -9,15 +9,15 @@ An atom visualizer. Built it because I needed decent atom drawings for some phys
 - Dark/light mode toggle
 - Electron shell visualization
 - Cation/anion support (add or remove electrons)
+  - The UI displays the charge state (neutral atom, cation, or anion) with color-coded labels
+  - The atom drawing updates to reflect the electron configuration
 - Shows atomic number (Z), mass number (A), and charge state
 - SVG/PNG/BMP export with customizable size, DPI, background color, and transparency
 
 ## Screenshots
 
-![Light mode](images/light-mode.png)
-![Cation example](images/cation.png)
-![Anion example](images/Anion.png)
 ![Gold](images/Aurum.png)
+![Light mode](images/light-mode.png)
 
 ## Usage
 
