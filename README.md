@@ -23,6 +23,8 @@ An atom visualizer. Built it because I needed decent atom drawings for some phys
 
 Open `Idiotom.html` in any browser. No install needed.
 
+Built with React and Babel (compiled in-browser).
+
 ## Export
 
 Click the ⬇ button to export. Options:
